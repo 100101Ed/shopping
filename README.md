@@ -11,4 +11,4 @@
 * [Including Excluding files at the pom.xml] (https://maven.apache.org/plugins/maven-resources-plugin/examples/include-exclude.html)
 * [GitHub Bash] (https://git-for-windows.github.io/)
 * [Selenium Code Base] (https://github.com/SeleniumHQ/selenium)
-* [What is Selenium] (http://www.guru99.com/cross-browser-testing-using-selenium.html)
+* [Cross Browser Testing] (http://www.guru99.com/cross-browser-testing-using-selenium.html)
