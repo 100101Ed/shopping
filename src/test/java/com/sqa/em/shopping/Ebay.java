@@ -1,11 +1,11 @@
-package com.sqa.em.amazon;
+package com.sqa.em.shopping;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class AddNumItemsToCart {
+public class Ebay {
 
 	@AfterClass
 	public void afterClass() {
@@ -25,8 +25,6 @@ public class AddNumItemsToCart {
 
 	@Test(dataProvider = "dp")
 	public void f(Integer n, String s) {
-		// TODO: Implement method User adds three items to their cart. Validate
-		// that the total cost comes out to what they would expect to have in
-		// their shopping cart.
+		// TODO: Implement method
 	}
 }

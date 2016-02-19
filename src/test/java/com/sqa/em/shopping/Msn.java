@@ -1,11 +1,11 @@
-package com.sqa.em.amazon;
+package com.sqa.em.shopping;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-public class DeleteItemsFromCart {
+public class Msn {
 
 	@AfterClass
 	public void afterClass() {
