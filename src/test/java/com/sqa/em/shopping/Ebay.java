@@ -92,7 +92,10 @@ public class Ebay {
 						By.xpath("//*[@id='watchlist']/div[2]/div[3]/div[1]/table/tbody/tr/td[2]/div/div[2]/div[1]/a"))
 				.isDisplayed()) {
 			System.out.println("The book is in watch list.");
+			driver.findElement(By.xpath("//*[@id='gh-ug']/b[2]")).click();
+			Thread.sleep(500);
 			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+			System.out.println("The test was succesfull.");
 		} else {
 			// Click Next button and search for the book again
 			System.out.println("Sorry, book was not added to the watch list or simply doesn't exists.");
