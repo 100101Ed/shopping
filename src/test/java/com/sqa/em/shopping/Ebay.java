@@ -13,8 +13,10 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
+	public static String[] keywords = { "Java", "Thinking", "Selenium" };
 	private WebDriver driver;
 	public int attemptNum = 0;
+	boolean foundBook = false;
 
 	@AfterClass
 	public void afterClass() {
@@ -40,6 +42,7 @@ public class Ebay {
 				// Quit Driver
 				driver.close();
 				attemptNum++;
+				System.out.println("Attempt: " + attemptNum);
 			}
 		} while (!(driver.getCurrentUrl().equals(baseURL)) || (attemptNum == 3));
 		// Error message if the code couldn't get proper page after 3 attempts
@@ -48,27 +51,41 @@ public class Ebay {
 					.println("Please verify the URL. According the requirements it should be http://www.ebay.com/ \n");
 			driver.quit();
 		}
-
+		Thread.sleep(1000);
+		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		// driver.findElement(By
-		// .xpath("html/body/div[4]/div/div/div/div[5]/div/div[1]/div/div[2]/div[1]/div[2]/span/form/div[1]/div[2]/div[4]/span[2]/input"))
-		// .sendKeys(userName);
-		// driver.findElement(By
-		// .xpath("html/body/div[4]/div/div/div/div[5]/div/div[1]/div/div[2]/div[1]/div[2]/span/form/div[1]/div[2]/div[5]/span[2]/input"))
-		// .sendKeys(userPassword);
+		Thread.sleep(500);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
+
 	}
 
-	@DataProvider
+	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { new Object[] { 1, "a" }, new Object[] { 2, "b" }, };
+		return new Object[][] { { "Test 1", keywords, 10, 5 } };
 	}
 
-	@Test(dataProvider = "dp")
-	public void f(Integer n, String s) {
-		// TODO: Implement method
+	@Test(dataProvider = "test1")
+	public void test1(String testName, String[] keywords, int maxResultsNum, int requiredResultsNum)
+			throws InterruptedException {
+		// Search using keyword Java
+		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+		driver.findElement(By.id("gh-btn")).click();
+		Thread.sleep(700);
+		// Looking for a book with the keyword 'Thinking'
+		do {
+			if (driver.findElement(By.xpath("//img[contains(@alt, keywords[1])]")).isDisplayed()) {
+				foundBook = true;
+				// Click on the book if it's displayed
+				driver.findElement(By.xpath("//img[contains(@alt, keywords[1])]")).click();
+			} else {
+				// Click Next button and search for the book again
+				driver.findElement(By.xpath("//a[contains(@class, 'gspr next'")).click();
+			}
+		} while (foundBook == false);
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//span[contains(@class, 'vi-atw-txt')]")).click();
 	}
 }
