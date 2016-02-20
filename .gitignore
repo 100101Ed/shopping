@@ -54,3 +54,6 @@ hs_err_pid*
 
 # testNG output
 test-output/
+
+# Saving Credentails
+*properties.*
