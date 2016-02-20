@@ -13,7 +13,7 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
-	public static String[] keywords = { "Java", "Thinking", "Selenium" };
+	public static String[] keywords = { "Java", "Thinking", "//*[@id='item464709d46d']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
 	boolean foundBook = false;
@@ -54,7 +54,7 @@ public class Ebay {
 		Thread.sleep(1000);
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(500);
+		Thread.sleep(800);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
@@ -64,28 +64,40 @@ public class Ebay {
 	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { { "Test 1", keywords, 10, 5 } };
+		return new Object[][] { { "Test 1", keywords } };
 	}
 
 	@Test(dataProvider = "test1")
-	public void test1(String testName, String[] keywords, int maxResultsNum, int requiredResultsNum)
-			throws InterruptedException {
+	public void test1(String testName, String[] keywords) throws InterruptedException {
 		// Search using keyword Java
 		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
 		driver.findElement(By.id("gh-btn")).click();
 		Thread.sleep(700);
 		// Looking for a book with the keyword 'Thinking'
 		do {
-			if (driver.findElement(By.xpath("//img[contains(@alt, keywords[1])]")).isDisplayed()) {
+			if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
 				foundBook = true;
 				// Click on the book if it's displayed
-				driver.findElement(By.xpath("//img[contains(@alt, keywords[1])]")).click();
+				driver.findElement(By.xpath(keywords[2])).click();
 			} else {
 				// Click Next button and search for the book again
-				driver.findElement(By.xpath("//a[contains(@class, 'gspr next'")).click();
+				driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
 			}
 		} while (foundBook == false);
 		Thread.sleep(500);
-		driver.findElement(By.xpath("//span[contains(@class, 'vi-atw-txt')]")).click();
+		driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
+		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+		if (driver
+				.findElement(
+						By.xpath("//*[@id='watchlist']/div[2]/div[3]/div[1]/table/tbody/tr/td[2]/div/div[2]/div[1]/a"))
+				.isDisplayed()) {
+			System.out.println("The book is in watch list.");
+			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+		} else {
+			// Click Next button and search for the book again
+			System.out.println("Sorry, book was not added to the watch list or simply doesn't exists.");
+			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+		}
+
 	}
 }
