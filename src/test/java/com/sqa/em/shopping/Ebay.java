@@ -32,7 +32,7 @@ public class Ebay {
 			driver = new FirefoxDriver();
 			// Navigate to url
 			driver.get(baseURL);
-			Thread.sleep(500);
+			Thread.sleep(800);
 			// Verification if the page is correct
 			if (driver.getCurrentUrl().equals(baseURL)) {
 				System.out.println("The page is verified: " + driver.getCurrentUrl());
@@ -55,7 +55,7 @@ public class Ebay {
 		Thread.sleep(1000);
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(800);
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
@@ -72,23 +72,31 @@ public class Ebay {
 	public void test1(String testName, String[] keywords) throws InterruptedException {
 		// Verifying if there is nothing in Watch list and delete if anything is
 		// there
-		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		if (driver.findElement(By.className("bulk-select")).isDisplayed()) {
-			driver.findElement(By.className("bulk-select")).click();
-			driver.findElement(By.className("btn btn-s btn-ter bulk-delete")).click();
-			driver.findElement(By.id("delCustpBtnSave")).click();
+		// driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+		driver.findElement(By.xpath("//*[@id='gh-eb-My-o']/ul/li[3]/a")).click();
+		Thread.sleep(1000);
+		if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div")).isDisplayed()) {
+			Thread.sleep(700);
+			// Search using keyword Java
+			driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+			Thread.sleep(700);
+			driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
+			Thread.sleep(700);
+		} else if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).isDisplayed()) {
+			driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).click();
+			driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
+			Thread.sleep(1000);
+			driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
 		}
-		// Search using keyword Java
-		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
-		driver.findElement(By.id("gh-btn")).click();
-		Thread.sleep(700);
+
 		// Looking for a book with the keyword 'Thinking'
 		do {
 			if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
 				foundBook = true;
-				itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
 				// Click on the book if it's displayed
 				driver.findElement(By.xpath(keywords[2])).click();
+				itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
+				System.out.println("The Search item number is " + itemNumberSearchPage);
 			} else {
 				// Click Next button and search for the book again
 				driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
@@ -97,15 +105,16 @@ public class Ebay {
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
 		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		itemNumberWatchList = driver.findElement(By.id("descItemNumber")).getText();
-		if (itemNumberWatchList.equals(itemNumberSearchPage)) {
-			System.out.println("The book is on watch list.");
+		// Have to replace first extra two and last extra two chars from item
+		// number
+		itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("(", "");
+		String updatedItemNumberWatchList = itemNumberWatchList.replace(" )", "");
+		System.out.println("The Search item number is " + updatedItemNumberWatchList);
+		// Matching the item numbers to figure out if the book is on the watch
+		// list
+		if (updatedItemNumberWatchList.equals(itemNumberSearchPage)) {
+			System.out.println("The book is on watch list./n");
 		}
-		driver.findElement(By.xpath("//*[@id='gh-ug']/b[2]")).click();
-		Thread.sleep(500);
-		driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
-		System.out.println("The test was succesfull./n");
-		driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
-
+		System.out.println("The test was succesfull.");
 	}
 }
