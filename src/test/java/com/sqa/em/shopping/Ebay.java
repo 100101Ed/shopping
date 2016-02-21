@@ -17,6 +17,7 @@ public class Ebay {
 	private WebDriver driver;
 	public int attemptNum = 0;
 	boolean foundBook = false;
+	public String itemNumberSearchPage, itemNumberWatchList;
 
 	@AfterClass
 	public void afterClass() {
@@ -69,6 +70,14 @@ public class Ebay {
 
 	@Test(dataProvider = "test1")
 	public void test1(String testName, String[] keywords) throws InterruptedException {
+		// Verifying if there is nothing in Watch list and delete if anything is
+		// there
+		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+		if (driver.findElement(By.className("bulk-select")).isDisplayed()) {
+			driver.findElement(By.className("bulk-select")).click();
+			driver.findElement(By.className("btn btn-s btn-ter bulk-delete")).click();
+			driver.findElement(By.id("delCustpBtnSave")).click();
+		}
 		// Search using keyword Java
 		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
 		driver.findElement(By.id("gh-btn")).click();
@@ -77,6 +86,7 @@ public class Ebay {
 		do {
 			if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
 				foundBook = true;
+				itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
 				// Click on the book if it's displayed
 				driver.findElement(By.xpath(keywords[2])).click();
 			} else {
@@ -87,20 +97,15 @@ public class Ebay {
 		Thread.sleep(500);
 		driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
 		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		if (driver
-				.findElement(
-						By.xpath("//*[@id='watchlist']/div[2]/div[3]/div[1]/table/tbody/tr/td[2]/div/div[2]/div[1]/a"))
-				.isDisplayed()) {
-			System.out.println("The book is in watch list.");
-			driver.findElement(By.xpath("//*[@id='gh-ug']/b[2]")).click();
-			Thread.sleep(500);
-			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
-			System.out.println("The test was succesfull.");
-		} else {
-			// Click Next button and search for the book again
-			System.out.println("Sorry, book was not added to the watch list or simply doesn't exists.");
-			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+		itemNumberWatchList = driver.findElement(By.id("descItemNumber")).getText();
+		if (itemNumberWatchList.equals(itemNumberSearchPage)) {
+			System.out.println("The book is on watch list.");
 		}
+		driver.findElement(By.xpath("//*[@id='gh-ug']/b[2]")).click();
+		Thread.sleep(500);
+		driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+		System.out.println("The test was succesfull./n");
+		driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
 
 	}
 }
