@@ -1,5 +1,6 @@
 package com.sqa.em.shopping;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 import java.util.Scanner;
@@ -39,46 +40,49 @@ import com.sqa.em.util.helper.RequestInput;
 //
 public class Amazon {
 
+	final static String BASE_URL_AMAZON = "https://www.amazon.com";
+
 	private WebDriver driver;
 
-	private String email = "";
+	private String email = "EnterYourInfo";
 
 	private String password = "";
-
-	private String baseUrl;
 
 	private boolean acceptNextAlert = true;
 
 	private StringBuffer verificationErrors = new StringBuffer();
 
-	@Test(enabled = false, dataProvider = "dp")
-	public void add3ItemsToCartTest(Integer n, String s) {
-		// TODO: Implement method. Verify cost comes up to what they were
-		// expecting.
-	}
-
 	@DataProvider
-	public Object[][] addQuanityToCartData() {
-		// TODO: Implement method to have 3 data sets
-		// return new Object[][] { new Object[] { 1 }, new Object[] { 3 } };
+	public Object[][] addItemsToCartData() {
 		return new Object[][] { new Object[] { 3 } };
 	}
 
-	@Test(dataProvider = "addQuanityToCartData")
-	public void addQuanityToCartTest(Integer numOfItems) throws InterruptedException {
+	@Test(enabled = false, dataProvider = "addItemsToCartData")
+	public void addItemsToCartTest(Integer numOfItems) {
+		int startCountOfCart =
+				Integer.parseInt(this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
 		for (int i = 0; i < numOfItems; i++) {
 			this.driver.findElement(By.xpath(".//input[@id='twotabsearchtextbox']")).clear();
 			this.driver.findElement(By.xpath(".//input[@id='twotabsearchtextbox']")).sendKeys("computers");
-			this.driver.findElement(By.xpath(".//input[@id='nav-search']/form/div[2]/div/input")).click();
-			this.driver.findElement(By.xpath(".//input[@id='result_0']/div/div[2]/div[1]/a/h2")).click();
-			this.driver.findElement(By.xpath(".//input[@id='add-to-cart-button']")).click();
-			System.out.println(" Looking for an object ");
+			this.driver.findElement(By.id("nav-search-submit-text")).click();
+			this.driver.findElement(By.cssSelector(".a-size-base.a-color-null.s-inline.s-access-title.a-text-normal"));
+			this.driver.findElement(By.xpath(".//.[@id='result_0']/div/div[2]/div[1]/a/h2")).click();
+			if (this.driver.findElement(By.id("buybox-see-all-buying-choices-announce")).isEnabled()) {
+				this.driver.findElement(By.id("buybox-see-all-buying-choices-announce")).click();
+				this.driver.findElement(By.id("a-autoid-0-announce")).click();
+			} else {
+				this.driver.findElement(By.id("add-to-cart-button-ubb")).click();
+			}
 		}
+		int endCountOfCart =
+				Integer.parseInt(this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
+		int itemsAddedToCart = (startCountOfCart == 0) ? endCountOfCart : endCountOfCart - startCountOfCart;
+		assertEquals(itemsAddedToCart, (int) numOfItems);
 	}
 
 	@AfterClass
 	public void afterClass() {
-		this.driver.quit();
+		// this.driver.quit();
 		String verificationErrorString = this.verificationErrors.toString();
 		if (!"".equals(verificationErrorString)) {
 			fail(verificationErrorString);
@@ -95,8 +99,40 @@ public class Amazon {
 			scanner.close();
 		}
 		this.driver = new FirefoxDriver();
-		this.baseUrl = "https://www.amazon.com/";
 		this.driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+	}
+
+	// cartNotExceedsCost
+	@DataProvider
+	public Object[][] cartNotExceedsCostData() {
+		return new Object[][] { new Object[] { 500.00 } };
+	}
+
+	@Test(enabled = true, dataProvider = "cartNotExceedsCostData")
+	public void cartNotExceedsCostTest(Double n) {
+		int numOfItems = 3;
+		if ((Integer.parseInt(this.driver.findElement(By.id("nav-cart-count")).getText())) != 0) {
+			int startCountOfCart =
+					Integer.parseInt(this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
+		}
+		for (int i = 0; i < numOfItems; i++) {
+			this.driver.findElement(By.xpath(".//input[@id='twotabsearchtextbox']")).clear();
+			this.driver.findElement(By.xpath(".//input[@id='twotabsearchtextbox']")).sendKeys("computers");
+			this.driver.findElement(By.id("nav-search-submit-text")).click();
+			this.driver.findElement(By.cssSelector(".a-size-base.a-color-null.s-inline.s-access-title.a-text-normal"));
+			this.driver.findElement(By.xpath(".//.[@id='result_0']/div/div[2]/div[1]/a/h2")).click();
+			if (this.driver.findElement(By.id("buybox-see-all-buying-choices-announce")).isEnabled()) {
+				this.driver.findElement(By.id("buybox-see-all-buying-choices-announce")).click();
+				this.driver.findElement(By.id("a-autoid-0-announce")).click();
+			} else {
+				this.driver.findElement(By.id("add-to-cart-button-ubb")).click();
+			}
+		}
+		int endCountOfCart =
+				Integer.parseInt(this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
+		// int itemsAddedToCart = (startCountOfCart == 0) ? endCountOfCart :
+		// endCountOfCart - startCountOfCart;
+		// assertEquals(itemsAddedToCart, numOfItems);
 	}
 
 	@Test(enabled = false, dataProvider = "dp")
@@ -121,7 +157,7 @@ public class Amazon {
 
 	@BeforeMethod
 	public void logIn() {
-		this.driver.get(this.baseUrl + "/");
+		this.driver.get(this.BASE_URL_AMAZON + "/");
 		this.driver.findElement(By.xpath(".//a[@id='nav-link-yourAccount']")).click();
 		// Enter email
 		this.driver.findElement(By.xpath(".//input[@id='ap_email']")).clear();
@@ -132,9 +168,8 @@ public class Amazon {
 		this.driver.findElement(By.xpath(".//input[@id='signInSubmit']")).click();
 	}
 
-	@AfterMethod()
+	@AfterMethod(enabled = false)
 	public void logOut() throws InterruptedException {
-		Thread.sleep(5000);
 		this.driver.findElement(By.xpath(".//*[@id='nav-link-yourAccount']")).click();
 		this.driver.findElement(By.xpath(".//*[@id='nav-item-signout']/span")).click();
 	}
