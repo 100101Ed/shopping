@@ -1,6 +1,7 @@
 package com.sqa.em.shopping;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterClass;
@@ -17,7 +18,7 @@ public class Ebay {
 	private WebDriver driver;
 	public int attemptNum = 0;
 	boolean foundBook = false;
-	public String itemNumberSearchPage, itemNumberWatchList;
+	public String itemNumberSearchPage, updatedItemNumberWatchList, itemNumberWatchList;
 
 	@AfterClass
 	public void afterClass() {
@@ -29,10 +30,12 @@ public class Ebay {
 	public void beforeClass() throws InterruptedException {
 		do {
 			// Launch FireFox browser
+			Thread.sleep(1000);
 			driver = new FirefoxDriver();
 			// Navigate to url
+			Thread.sleep(1000);
 			driver.get(baseURL);
-			Thread.sleep(800);
+			Thread.sleep(1000);
 			// Verification if the page is correct
 			if (driver.getCurrentUrl().equals(baseURL)) {
 				System.out.println("The page is verified: " + driver.getCurrentUrl());
@@ -55,11 +58,11 @@ public class Ebay {
 		Thread.sleep(1000);
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(1000);
+		Thread.sleep(3000);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
-
+		Thread.sleep(1000);
 	}
 
 	@DataProvider(name = "test1")
@@ -72,25 +75,32 @@ public class Ebay {
 	public void test1(String testName, String[] keywords) throws InterruptedException {
 		// Verifying if there is nothing in Watch list and delete if anything is
 		// there
-		// driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		driver.findElement(By.xpath("//*[@id='gh-eb-My-o']/ul/li[3]/a")).click();
-		Thread.sleep(1000);
-		if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div")).isDisplayed()) {
-			Thread.sleep(700);
-			// Search using keyword Java
-			driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
-			Thread.sleep(700);
-			driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
-			Thread.sleep(700);
-		} else if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).isDisplayed()) {
-			driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).click();
-			driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
-			Thread.sleep(1000);
-			driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
+		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+		driver.findElement(By.xpath("//*[@id='domain-nav']/div[2]/div[2]/ul/li[2]/a")).click();
+
+		try {
+			Thread.sleep(3000);
+			if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).isDisplayed()) {
+				driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).click();
+				driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
+				Thread.sleep(1000);
+				driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
+			} else {
+			}
+		} catch (NoSuchElementException e) {
+			System.out.println("The watch list is empty.");
 		}
+
+		Thread.sleep(700);
+		// Search using keyword Java
+		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+		Thread.sleep(700);
+		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
+		Thread.sleep(700);
 
 		// Looking for a book with the keyword 'Thinking'
 		do {
+			Thread.sleep(1000);
 			if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
 				foundBook = true;
 				// Click on the book if it's displayed
@@ -107,14 +117,15 @@ public class Ebay {
 		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
 		// Have to replace first extra two and last extra two chars from item
 		// number
-		itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("(", "");
+		itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("( ", "");
 		String updatedItemNumberWatchList = itemNumberWatchList.replace(" )", "");
-		System.out.println("The Search item number is " + updatedItemNumberWatchList);
+		System.out.println("The Search item number in Watch List is " + updatedItemNumberWatchList);
 		// Matching the item numbers to figure out if the book is on the watch
 		// list
 		if (updatedItemNumberWatchList.equals(itemNumberSearchPage)) {
-			System.out.println("The book is on watch list./n");
+			System.out.println("The book is on watch list.");
 		}
+		driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
 		System.out.println("The test was succesfull.");
 	}
 }
