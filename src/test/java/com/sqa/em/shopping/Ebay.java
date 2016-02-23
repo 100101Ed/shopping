@@ -55,10 +55,14 @@ public class Ebay {
 					.println("Please verify the URL. According the requirements it should be http://www.ebay.com/ \n");
 			driver.quit();
 		}
-		Thread.sleep(1000);
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(3000);
+		Thread.sleep(8000);
+
+		// WebDriverWait wait = new WebDriverWait(driver, 10);
+		// WebElement element = wait.until(ExpectedConditions.
+		// elementToBeClickable(By.id("someid")));
+
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
@@ -81,73 +85,77 @@ public class Ebay {
 		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
 		Thread.sleep(700);
 
-		zeroListings = driver.findElement(By.id("bciw")).getText() + " " + keywords[0];
-		System.out.println(zeroListings);
-		System.out.println(keywords[0] + " 0 listings");
+		zeroListings = driver.findElement(By.cssSelector("span.listingscnt")).getText();
+		int numListing = Integer.parseInt(zeroListings.split(" ")[0]);
 
-		if (zeroListings.equals(keywords[0] + " 0 listings")) {
+		if (numListing == 0) {
 			System.out.println("Ebay doesn't have your item on sale.");
 			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
 			System.out.println("Completing the test.");
 			driver.findElement(By.xpath("//*[@id='gh-ug']/b[1]")).click();
 			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
 			// Quit Driver
+			driver.close();
 			driver.quit();
-		}
+		} else {
 
-		// Verifying if there is nothing in Watch list and delete if anything is
-		// there
-		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		driver.findElement(By.xpath("//*[@id='domain-nav']/div[2]/div[2]/ul/li[2]/a")).click();
+			// Verifying if there is nothing in Watch list and delete if
+			// anything is
+			// there
+			driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+			driver.findElement(By.xpath("//*[@id='domain-nav']/div[2]/div[2]/ul/li[2]/a")).click();
 
-		try {
-			Thread.sleep(3000);
-			if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).isDisplayed()) {
-				driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).click();
-				driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
+			try {
+				Thread.sleep(3000);
+				if (driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).isDisplayed()) {
+					driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/input")).click();
+					driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
+					Thread.sleep(1000);
+					driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
+				} else {
+				}
+			} catch (NoSuchElementException e) {
+				System.out.println("The watch list is empty.");
+			}
+
+			Thread.sleep(700);
+			// Search using keyword Java
+			driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+			Thread.sleep(700);
+			driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
+			Thread.sleep(700);
+
+			// Looking for a book with the keyword 'Thinking'
+			do {
 				Thread.sleep(1000);
-				driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
-			} else {
+				if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
+					foundBook = true;
+					// Click on the book if it's displayed
+					driver.findElement(By.xpath(keywords[2])).click();
+					itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
+					System.out.println("The Search item number is " + itemNumberSearchPage);
+				} else {
+					// Click Next button and search for the book again
+					driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
+				}
+			} while (foundBook == false);
+			Thread.sleep(500);
+			driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
+			driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
+			// Have to replace first extra two and last extra two chars from
+			// item
+			// number
+			itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("( ", "");
+			String updatedItemNumberWatchList = itemNumberWatchList.replace(" )", "");
+			System.out.println("The Search item number in Watch List is " + updatedItemNumberWatchList);
+			// Matching the item numbers to figure out if the book is on the
+			// watch
+			// list
+			if (updatedItemNumberWatchList.equals(itemNumberSearchPage)) {
+				System.out.println("The book is on watch list.");
 			}
-		} catch (NoSuchElementException e) {
-			System.out.println("The watch list is empty.");
+			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
+			System.out.println("The test was succesfull.");
 		}
-
-		Thread.sleep(700);
-		// Search using keyword Java
-		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
-		Thread.sleep(700);
-		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
-		Thread.sleep(700);
-
-		// Looking for a book with the keyword 'Thinking'
-		do {
-			Thread.sleep(1000);
-			if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
-				foundBook = true;
-				// Click on the book if it's displayed
-				driver.findElement(By.xpath(keywords[2])).click();
-				itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
-				System.out.println("The Search item number is " + itemNumberSearchPage);
-			} else {
-				// Click Next button and search for the book again
-				driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
-			}
-		} while (foundBook == false);
-		Thread.sleep(500);
-		driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
-		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
-		// Have to replace first extra two and last extra two chars from item
-		// number
-		itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("( ", "");
-		String updatedItemNumberWatchList = itemNumberWatchList.replace(" )", "");
-		System.out.println("The Search item number in Watch List is " + updatedItemNumberWatchList);
-		// Matching the item numbers to figure out if the book is on the watch
-		// list
-		if (updatedItemNumberWatchList.equals(itemNumberSearchPage)) {
-			System.out.println("The book is on watch list.");
-		}
-		driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
-		System.out.println("The test was succesfull.");
 	}
 }
