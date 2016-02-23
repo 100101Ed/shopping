@@ -17,9 +17,9 @@ public class Ebay {
 	public static String[] keywords = { "Java", "Cucumber", "//*[@id='item58d102c4fc']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
-	boolean foundBook = false;
-	public String zeroListings, itemNumberSearchPage, itemNumberWatchList;
-	long numListing;
+	public boolean foundBook = false;
+	public String zeroListings, itemNumber;
+	long numListing, itemNumberOnSearchPage, itemNumberOnWatchList;
 	public int pageNum = 1;
 
 	@AfterClass
@@ -86,13 +86,9 @@ public class Ebay {
 		Thread.sleep(700);
 		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
 		Thread.sleep(700);
-
-		zeroListings = driver.findElement(By.cssSelector("span.listingscnt")).getText();
-		String updatedZeroListing = zeroListings.replaceAll("[^0-9]", "");
-		numListing = Integer.parseInt(updatedZeroListing);
-		// numListing = Integer.parseInt(zeroListings.split(" ")[0]);
-
-		System.out.println(numListing);
+		zeroListings = driver.findElement(By.cssSelector("span.listingscnt")).getText().replaceAll("[^0-9]", "");
+		numListing = Integer.parseInt(zeroListings);
+		System.out.println("Ebay has " + numListing + " listings that match your search.");
 
 		if (numListing == 0) {
 			System.out.println("Ebay doesn't have your item on sale.");
@@ -118,7 +114,6 @@ public class Ebay {
 					driver.findElement(By.xpath("//*[@id='watchlist']/div[2]/div[1]/div[1]/div/a[1]")).click();
 					Thread.sleep(1000);
 					driver.findElement(By.xpath("//*[@id='delCustpBtnSave']")).click();
-				} else {
 				}
 			} catch (NoSuchElementException e) {
 				System.out.println("The watch list is empty.");
@@ -132,20 +127,26 @@ public class Ebay {
 			Thread.sleep(700);
 
 			// Looking for a book with the keyword 'Thinking'
-			do {
+			while ((foundBook == false) || (pageNum != 3)) {
 				Thread.sleep(3000);
-				if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
-					foundBook = true;
-					// Click on the book if it's displayed
-					driver.findElement(By.xpath(keywords[2])).click();
-					itemNumberSearchPage = driver.findElement(By.id("descItemNumber")).getText();
-					System.out.println("The Search item number is " + itemNumberSearchPage);
-				} else {
+				try {
+					if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
+						foundBook = true;
+						// Click on the book if it's displayed
+						driver.findElement(By.xpath(keywords[2])).click();
+						itemNumber = driver.findElement(By.id("descItemNumber")).getText().replaceAll("[^0-9]", "");
+						itemNumberOnSearchPage = Long.parseLong(itemNumber.trim());
+						System.out.println("The item number on Search page is " + itemNumberOnSearchPage);
+						// break;
+					}
+				} catch (NoSuchElementException e) {
+					System.out.println(
+							"Couldn't find your item on page #" + pageNum + "." + " Will try next couple of pages.");
 					// Click Next button and search for the book again
 					driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
 					pageNum++;
 				}
-			} while (foundBook == false || pageNum != 3);
+			}
 
 			if (pageNum == 3) {
 				System.out.println("Per test requirememnts, only first three pages should be searched.");
@@ -161,13 +162,14 @@ public class Ebay {
 			// Have to replace first extra two and last extra two chars from
 			// item
 			// number
-			itemNumberWatchList = driver.findElement(By.className("display-item-id")).getText().replace("( ", "");
-			String updatedItemNumberWatchList = itemNumberWatchList.replace(" )", "");
-			System.out.println("The Search item number in Watch List is " + updatedItemNumberWatchList);
+			itemNumber = driver.findElement(By.className("display-item-id")).getText().replaceAll("[^0-9]", "");
+			itemNumberOnWatchList = Long.parseLong(itemNumber.trim());
+			System.out.println("The item number on Watch List is " + itemNumberOnWatchList);
+
 			// Matching the item numbers to figure out if the book is on the
 			// watch
 			// list
-			if (updatedItemNumberWatchList.equals(itemNumberSearchPage)) {
+			if (itemNumberOnSearchPage == itemNumberOnWatchList) {
 				System.out.println("The book is on watch list.");
 			}
 			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
