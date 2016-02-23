@@ -14,11 +14,11 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
-	public static String[] keywords = { "Java", "Thinking", "//*[@id='item464709d46d']/h3/a" };
+	public static String[] keywords = { "hjfgfdgfdgfdgfdgdgfd", "Thinking", "//*[@id='item464709d46d']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
 	boolean foundBook = false;
-	public String itemNumberSearchPage, updatedItemNumberWatchList, itemNumberWatchList;
+	public String itemNumberSearchPage, updatedItemNumberWatchList, itemNumberWatchList, zeroListings;
 
 	@AfterClass
 	public void afterClass() {
@@ -73,6 +73,28 @@ public class Ebay {
 
 	@Test(dataProvider = "test1")
 	public void test1(String testName, String[] keywords) throws InterruptedException {
+		// Verifying if our item exists in Ebay.
+		Thread.sleep(700);
+		// Search using keyword Java
+		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+		Thread.sleep(700);
+		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
+		Thread.sleep(700);
+
+		zeroListings = driver.findElement(By.id("bciw")).getText() + " " + keywords[0];
+		System.out.println(zeroListings);
+		System.out.println(keywords[0] + " 0 listings");
+
+		if (zeroListings.equals(keywords[0] + " 0 listings")) {
+			System.out.println("Ebay doesn't have your item on sale.");
+			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
+			System.out.println("Completing the test.");
+			driver.findElement(By.xpath("//*[@id='gh-ug']/b[1]")).click();
+			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
+			// Quit Driver
+			driver.quit();
+		}
+
 		// Verifying if there is nothing in Watch list and delete if anything is
 		// there
 		driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
