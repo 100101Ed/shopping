@@ -14,11 +14,13 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
-	public static String[] keywords = { "hjfgfdgfdgfdgfdgdgfd", "Thinking", "//*[@id='item464709d46d']/h3/a" };
+	public static String[] keywords = { "Java", "Cucumber", "//*[@id='item58d102c4fc']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
 	boolean foundBook = false;
-	public String itemNumberSearchPage, updatedItemNumberWatchList, itemNumberWatchList, zeroListings;
+	public String zeroListings, itemNumberSearchPage, itemNumberWatchList;
+	long numListing;
+	public int pageNum = 1;
 
 	@AfterClass
 	public void afterClass() {
@@ -57,7 +59,7 @@ public class Ebay {
 		}
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(8000);
+		Thread.sleep(9000);
 
 		// WebDriverWait wait = new WebDriverWait(driver, 10);
 		// WebElement element = wait.until(ExpectedConditions.
@@ -86,7 +88,11 @@ public class Ebay {
 		Thread.sleep(700);
 
 		zeroListings = driver.findElement(By.cssSelector("span.listingscnt")).getText();
-		int numListing = Integer.parseInt(zeroListings.split(" ")[0]);
+		String updatedZeroListing = zeroListings.replaceAll("[^0-9]", "");
+		numListing = Integer.parseInt(updatedZeroListing);
+		// numListing = Integer.parseInt(zeroListings.split(" ")[0]);
+
+		System.out.println(numListing);
 
 		if (numListing == 0) {
 			System.out.println("Ebay doesn't have your item on sale.");
@@ -127,7 +133,7 @@ public class Ebay {
 
 			// Looking for a book with the keyword 'Thinking'
 			do {
-				Thread.sleep(1000);
+				Thread.sleep(3000);
 				if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
 					foundBook = true;
 					// Click on the book if it's displayed
@@ -137,8 +143,18 @@ public class Ebay {
 				} else {
 					// Click Next button and search for the book again
 					driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
+					pageNum++;
 				}
-			} while (foundBook == false);
+			} while (foundBook == false || pageNum != 3);
+
+			if (pageNum == 3) {
+				System.out.println("Per test requirememnts, only first three pages should be searched.");
+				System.out.println("Completing the test.");
+				// Quit Driver
+				driver.close();
+				driver.quit();
+			}
+
 			Thread.sleep(500);
 			driver.findElement(By.xpath("//*[@id='vi-atl-lnk']/a/span[2]")).click();
 			driver.findElement(By.xpath("//*[@id='gh-eb-My']/div/a[1]")).click();
