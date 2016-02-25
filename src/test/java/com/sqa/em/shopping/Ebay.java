@@ -14,7 +14,9 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
-	public static String[] keywords = { "Java", "Cucumber", "//*[@id='item58d102c4fc']/h3/a" };
+	// public static String[] keywords = { "Java", "Multimedia Introduction to
+	// Programming Using Java",
+	// "//*[@id='item3abdce95f1']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
 	public boolean foundBook = false;
@@ -36,10 +38,12 @@ public class Ebay {
 			driver = new FirefoxDriver();
 			// Navigate to url
 			Thread.sleep(1000);
+
 			driver.get(baseURL);
 			Thread.sleep(1000);
 			// Verification if the page is correct
 			if (driver.getCurrentUrl().equals(baseURL)) {
+				System.out.println("<<<<<<<<>>>>>>>>");
 				System.out.println("The page is verified: " + driver.getCurrentUrl());
 			} else {
 				// In case if the page is wrong then code will make 3 attempts
@@ -74,15 +78,17 @@ public class Ebay {
 	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { { "Test 1", keywords } };
+		return new Object[][] { { "Test 1", "Java", "Multimedia Introduction to Programming Using Java",
+				"//*[@id='item3abdce95f1']/h3/a" } };
 	}
 
 	@Test(dataProvider = "test1")
-	public void test1(String testName, String[] keywords) throws InterruptedException {
+	public void test1(String testName, String searchItem, String bookName, String xPathLocator)
+			throws InterruptedException {
 		// Verifying if our item exists in Ebay.
 		Thread.sleep(700);
 		// Search using keyword Java
-		driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+		driver.findElement(By.id("gh-ac")).sendKeys(searchItem);
 		Thread.sleep(700);
 		driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
 		Thread.sleep(700);
@@ -98,7 +104,7 @@ public class Ebay {
 			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
 			// Quit Driver
 			driver.close();
-			driver.quit();
+			// driver.quit();
 		} else {
 
 			// Verifying if there is nothing in Watch list and delete if
@@ -121,19 +127,19 @@ public class Ebay {
 
 			Thread.sleep(700);
 			// Search using keyword Java
-			driver.findElement(By.id("gh-ac")).sendKeys(keywords[0]);
+			driver.findElement(By.id("gh-ac")).sendKeys(searchItem);
 			Thread.sleep(700);
 			driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
 			Thread.sleep(700);
 
 			// Looking for a book with the keyword 'Thinking'
-			while ((foundBook == false) || (pageNum != 3)) {
+			while ((foundBook == false) && (pageNum < 3)) {
 				Thread.sleep(3000);
 				try {
-					if (driver.findElement(By.xpath(keywords[2])).isDisplayed()) {
+					if (driver.findElement(By.xpath(xPathLocator)).isDisplayed()) {
 						foundBook = true;
 						// Click on the book if it's displayed
-						driver.findElement(By.xpath(keywords[2])).click();
+						driver.findElement(By.xpath(xPathLocator)).click();
 						itemNumber = driver.findElement(By.id("descItemNumber")).getText().replaceAll("[^0-9]", "");
 						itemNumberOnSearchPage = Long.parseLong(itemNumber.trim());
 						System.out.println("The item number on Search page is " + itemNumberOnSearchPage);
@@ -153,7 +159,7 @@ public class Ebay {
 				System.out.println("Completing the test.");
 				// Quit Driver
 				driver.close();
-				driver.quit();
+				// driver.quit();
 			}
 
 			Thread.sleep(500);
@@ -162,6 +168,7 @@ public class Ebay {
 			// Have to replace first extra two and last extra two chars from
 			// item
 			// number
+			Thread.sleep(1000);
 			itemNumber = driver.findElement(By.className("display-item-id")).getText().replaceAll("[^0-9]", "");
 			itemNumberOnWatchList = Long.parseLong(itemNumber.trim());
 			System.out.println("The item number on Watch List is " + itemNumberOnWatchList);
@@ -174,6 +181,8 @@ public class Ebay {
 			}
 			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
 			System.out.println("The test was succesfull.");
+			System.out.println("<<<<<<<<>>>>>>>>");
+			System.out.println("\n");
 		}
 	}
 }
