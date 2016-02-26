@@ -14,9 +14,6 @@ public class Ebay {
 	public static String baseURL = "http://www.ebay.com/";
 	public static String userName = "testebayautomation@gmail.com";
 	public static String userPassword = "testqa123";
-	// public static String[] keywords = { "Java", "Multimedia Introduction to
-	// Programming Using Java",
-	// "//*[@id='item3abdce95f1']/h3/a" };
 	private WebDriver driver;
 	public int attemptNum = 0;
 	public boolean foundBook = false;
@@ -63,12 +60,7 @@ public class Ebay {
 		}
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(9000);
-
-		// WebDriverWait wait = new WebDriverWait(driver, 10);
-		// WebElement element = wait.until(ExpectedConditions.
-		// elementToBeClickable(By.id("someid")));
-
+		Thread.sleep(10000);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
@@ -78,7 +70,13 @@ public class Ebay {
 	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { { "Test 1", "Java", "Thinking" } };
+		return new Object[][] { { "Test 1", "Java", "Cucumber" } };
+	}
+
+	@DataProvider(name = "test2")
+	public Object[][] dp2() {
+		// TODO: Implement method
+		return new Object[][] { { "Dan" } };
 	}
 
 	@Test(dataProvider = "test1")
@@ -98,11 +96,12 @@ public class Ebay {
 			System.out.println("Ebay doesn't have your item on sale.");
 			driver.findElement(By.xpath("//*[@id='gh']/table/tbody/tr/td[1]")).click();
 			System.out.println("Completing the test.");
+			System.out.println("<<<<<<<<>>>>>>>>");
 			driver.findElement(By.xpath("//*[@id='gh-ug']/b[1]")).click();
 			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
 			// Quit Driver
-			driver.close();
-			// driver.quit();
+			driver.quit();
+			System.exit(0);
 		} else {
 
 			// Verifying if there is nothing in Watch list and delete if
@@ -134,20 +133,17 @@ public class Ebay {
 			while ((foundBook == false) && (pageNum != 4)) {
 				Thread.sleep(3000);
 				try {
-					if (driver.findElement(By.xpath("//a[contains(@title, '" + searchItemName + "')]")).isDisplayed()) {
+					if (driver.findElement(By.partialLinkText(searchItemName)).isDisplayed()) {
 						foundBook = true;
 						// Click on the book if it's displayed
-						driver.findElement(By.xpath("//a[contains(@title, '" + searchItemName + "')]")).click();
-						// driver.findElement(By.xpath("a[title=" + xpathLocator
-						// + "]")).click();
+						driver.findElement(By.partialLinkText(searchItemName)).click();
 						itemNumber = driver.findElement(By.id("descItemNumber")).getText().replaceAll("[^0-9]", "");
 						itemNumberOnSearchPage = Long.parseLong(itemNumber.trim());
 						System.out.println("The item number on Search page is " + itemNumberOnSearchPage);
 						// break;
 					}
 				} catch (NoSuchElementException e) {
-					System.out.println(
-							"Couldn't find your item on page #" + pageNum + "." + " Will try next couple of pages.");
+					System.out.println("Couldn't find your item on page #" + pageNum + ".");
 					// Click Next button and search for the book again
 					driver.findElement(By.xpath("//*[@id='Pagination']/tbody/tr/td[3]/a")).click();
 					pageNum++;
@@ -186,5 +182,12 @@ public class Ebay {
 			System.out.println("<<<<<<<<>>>>>>>>");
 			System.out.println("\n");
 		}
+	}
+
+	@Test(dataProvider = "test2")
+	public void test2(String name) {
+		System.out.println("<<<<<<<<>>>>>>>>");
+		System.out.println("Hello " + name);
+
 	}
 }
