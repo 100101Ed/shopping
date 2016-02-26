@@ -78,13 +78,11 @@ public class Ebay {
 	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { { "Test 1", "Java", "Multimedia Introduction to Programming Using Java",
-				"//*[@id='item3abdce95f1']/h3/a" } };
+		return new Object[][] { { "Test 1", "Java", "Thinking" } };
 	}
 
 	@Test(dataProvider = "test1")
-	public void test1(String testName, String searchItem, String bookName, String xPathLocator)
-			throws InterruptedException {
+	public void test1(String testName, String searchItem, String searchItemName) throws InterruptedException {
 		// Verifying if our item exists in Ebay.
 		Thread.sleep(700);
 		// Search using keyword Java
@@ -132,14 +130,16 @@ public class Ebay {
 			driver.findElement(By.xpath("//*[@id='gh-btn']")).click();
 			Thread.sleep(700);
 
-			// Looking for a book with the keyword 'Thinking'
-			while ((foundBook == false) && (pageNum < 3)) {
+			// Looking for a book with the keyword
+			while ((foundBook == false) && (pageNum != 4)) {
 				Thread.sleep(3000);
 				try {
-					if (driver.findElement(By.xpath(xPathLocator)).isDisplayed()) {
+					if (driver.findElement(By.xpath("//a[contains(@title, '" + searchItemName + "')]")).isDisplayed()) {
 						foundBook = true;
 						// Click on the book if it's displayed
-						driver.findElement(By.xpath(xPathLocator)).click();
+						driver.findElement(By.xpath("//a[contains(@title, '" + searchItemName + "')]")).click();
+						// driver.findElement(By.xpath("a[title=" + xpathLocator
+						// + "]")).click();
 						itemNumber = driver.findElement(By.id("descItemNumber")).getText().replaceAll("[^0-9]", "");
 						itemNumberOnSearchPage = Long.parseLong(itemNumber.trim());
 						System.out.println("The item number on Search page is " + itemNumberOnSearchPage);
@@ -154,12 +154,14 @@ public class Ebay {
 				}
 			}
 
-			if (pageNum == 3) {
-				System.out.println("Per test requirememnts, only first three pages should be searched.");
+			if (pageNum == 4) {
+				System.out.println("Per test requirements, only first three pages should be searched.");
 				System.out.println("Completing the test.");
+				System.out.println("<<<<<<<<>>>>>>>>");
 				// Quit Driver
-				driver.close();
-				// driver.quit();
+				// driver.close();
+				driver.quit();
+				System.exit(0);
 			}
 
 			Thread.sleep(500);
@@ -168,7 +170,7 @@ public class Ebay {
 			// Have to replace first extra two and last extra two chars from
 			// item
 			// number
-			Thread.sleep(1000);
+			Thread.sleep(3000);
 			itemNumber = driver.findElement(By.className("display-item-id")).getText().replaceAll("[^0-9]", "");
 			itemNumberOnWatchList = Long.parseLong(itemNumber.trim());
 			System.out.println("The item number on Watch List is " + itemNumberOnWatchList);
