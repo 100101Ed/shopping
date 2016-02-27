@@ -62,7 +62,7 @@ public class Ebay {
 		}
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(10000);
+		Thread.sleep(8000);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
 		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
@@ -102,8 +102,8 @@ public class Ebay {
 			driver.findElement(By.xpath("//*[@id='gh-ug']/b[1]")).click();
 			driver.findElement(By.xpath("//*[@id='gh-uo']/a")).click();
 			// Quit Driver
-			driver.quit();
-			System.exit(0);
+			// driver.quit();
+			// System.exit(0);
 		} else {
 
 			// Verifying if there is nothing in Watch list and delete if
@@ -188,14 +188,21 @@ public class Ebay {
 
 	@Test(dataProvider = "test2")
 	public void test2(String name) {
-		Actions actions = new Actions(driver);
-		WebElement mainMenu = driver.findElement(By.linkText("Sporting Goods"));
-		actions.moveToElement(mainMenu);
+		// Actions actions = new Actions(driver);
+		// WebElement mainMenu =
+		// driver.findElement(By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/a"));
+		// actions.moveToElement(mainMenu);
+		//
+		// WebElement subLink = driver.findElement(
+		// By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[2]/a"));
+		// actions.moveToElement(subLink);
+		// actions.click();
+		// actions.perform();
 
-		WebElement subLink = driver.findElement(
-				By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[2]/a"));
-		actions.moveToElement(subLink);
-		actions.click();
-		actions.perform();
+		WebElement element = driver.findElement(By.xpath("//a[contains(@_sp, 'Sporting Goods')]"));
+		Actions action = new Actions(driver);
+		action.moveToElement(element).build().perform();
+		driver.findElement(
+				By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[4]/a")).click();
 	}
 }
