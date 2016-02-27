@@ -3,7 +3,9 @@ package com.sqa.em.shopping;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -70,7 +72,7 @@ public class Ebay {
 	@DataProvider(name = "test1")
 	public Object[][] dp() {
 		// TODO: Implement method
-		return new Object[][] { { "Test 1", "Java", "Cucumber" } };
+		return new Object[][] { { "Test 1", "kshfkajhfkajhdfk", "asjndasndasnd" } };
 	}
 
 	@DataProvider(name = "test2")
@@ -186,8 +188,14 @@ public class Ebay {
 
 	@Test(dataProvider = "test2")
 	public void test2(String name) {
-		System.out.println("<<<<<<<<>>>>>>>>");
-		System.out.println("Hello " + name);
+		Actions actions = new Actions(driver);
+		WebElement mainMenu = driver.findElement(By.linkText("Sporting Goods"));
+		actions.moveToElement(mainMenu);
 
+		WebElement subLink = driver.findElement(
+				By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[2]/a"));
+		actions.moveToElement(subLink);
+		actions.click();
+		actions.perform();
 	}
 }
