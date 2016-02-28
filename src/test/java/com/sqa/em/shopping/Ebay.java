@@ -81,7 +81,7 @@ public class Ebay {
 		return new Object[][] { { "Dan" } };
 	}
 
-	@Test(dataProvider = "test1")
+	@Test(enabled = false)
 	public void test1(String testName, String searchItem, String searchItemName) throws InterruptedException {
 		// Verifying if our item exists in Ebay.
 		Thread.sleep(700);
@@ -104,6 +104,7 @@ public class Ebay {
 			// Quit Driver
 			// driver.quit();
 			// System.exit(0);
+
 		} else {
 
 			// Verifying if there is nothing in Watch list and delete if
@@ -187,22 +188,16 @@ public class Ebay {
 	}
 
 	@Test(dataProvider = "test2")
-	public void test2(String name) {
-		// Actions actions = new Actions(driver);
-		// WebElement mainMenu =
-		// driver.findElement(By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/a"));
-		// actions.moveToElement(mainMenu);
-		//
-		// WebElement subLink = driver.findElement(
-		// By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[2]/a"));
-		// actions.moveToElement(subLink);
-		// actions.click();
-		// actions.perform();
+	public void test2(String name) throws InterruptedException {
+		Actions actions = new Actions(driver);
+		Thread.sleep(6000);
+		WebElement mainMenu = driver.findElement(By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]"));
+		actions.moveToElement(mainMenu);
 
-		WebElement element = driver.findElement(By.xpath("//a[contains(@_sp, 'Sporting Goods')]"));
-		Actions action = new Actions(driver);
-		action.moveToElement(element).build().perform();
-		driver.findElement(
-				By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[4]/a")).click();
+		WebElement subLink = driver.findElement(
+				By.xpath("//*[@id='navigationFragment']/div/table/tbody/tr/td[9]/div[2]/div[1]/ul[2]/li[2]/a"));
+		actions.moveToElement(subLink);
+		actions.click();
+		actions.perform();
 	}
 }
