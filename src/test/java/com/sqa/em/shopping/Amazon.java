@@ -3,20 +3,19 @@ package com.sqa.em.shopping;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.sqa.em.util.helper.SelectBrowser;
+import com.sqa.em.util.helper.SelectBrowser.BROWSER_TYPE;
 import com.sqa.em.util.helper.TakeAndSaveScreenShot;
 
 /**
@@ -100,8 +99,7 @@ public class Amazon {
 
 	@BeforeClass
 	public void beforeClass() {
-		this.driver = new FirefoxDriver();
-		this.driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		this.driver = SelectBrowser.getBrowser(BROWSER_TYPE.internetExplorer, this.driver, 30);
 		// Hangs with a database connection TODO: Fix DB later or get from File
 		// or Pom.
 		// String[] userDetails = DataBaseUtil.getData();
@@ -152,14 +150,10 @@ public class Amazon {
 	private Double getCurrentTotalCostOnCart() {
 		if ((Integer.parseInt(this.driver.findElement(By.id("nav-cart-count")).getText())) > 0) {
 			String delimiter = " |\\n|\\t";
-			// System.out.println("----------->Cart Is not
-			// Empty<------------------");
 			this.driver.findElement(By.id("nav-cart")).click();
 			String text = this.driver.findElement(By.id("gutterCartViewForm")).getText();
-			// System.out.println(" Elements ==> " + text);
 			String[] string = text.split(delimiter);
 			for (String string2 : string) {
-				// System.out.println("String split results " + string2);
 				if (string2.contains("$")) {
 					string2 = string2.replace("$", "");
 					string2 = string2.replace(",", "");// over $1,000
@@ -179,16 +173,6 @@ public class Amazon {
 
 	@Test(enabled = true, dataProvider = "deleteItemsFromCartData")
 	public void deleteItemsFromCartTest(Integer itemsToDelete) {
-		// TODO: Implement method . User deleted a number of items of their cart
-		// if there are items. Validate that the items were deleted.
-		// CSS .a-declarative>input
-		// xpath
-		// .//*[@id='activeCartViewForm']/div[2]/div[1]/div[4]/div[2]/div[1]/div/div/div[2]/div/span[1]/span/input
-		/**
-		 * <input type="submit" aria-label=
-		 * "Delete Dell OptiPlex 760 Desktop Complete Computer Package - 4GB Memory Windows 7 , Keyboard &amp; Mouse - Mouse and Dell 17&quot; LCD"
-		 * value="Delete" name="submit.delete.C1MQWZVNP1QGMK">
-		 */
 		TakeAndSaveScreenShot.screenShot(this.driver,
 				"test-output/amazon/ScreenShots/BeforeDeletingItems.png");
 		int itemsInCart = Integer.parseInt(
