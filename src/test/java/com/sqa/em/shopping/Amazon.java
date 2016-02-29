@@ -42,9 +42,9 @@ public class Amazon {
 
 	private WebDriver driver;
 
-	public String email = "testok2016@yahoo.com";
+	public String email = "";
 
-	public String password = "SQATest123";
+	public String password = "";
 
 	public boolean acceptNextAlert = true;
 
@@ -55,7 +55,7 @@ public class Amazon {
 		return new Object[][] { new Object[] { 3 } };
 	}
 
-	@Test(enabled = false, dataProvider = "addItemsToCartData")
+	@Test(enabled = true, dataProvider = "addItemsToCartData")
 	public void addItemsToCartTest(Integer numOfItems) {
 		int startCountOfCart = Integer.parseInt(
 				this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
@@ -89,9 +89,9 @@ public class Amazon {
 
 	@AfterClass
 	public void afterClass() {
-		// this.driver.findElement(By.xpath(".//*[@id='nav-link-yourAccount']")).click();
-		// this.driver.findElement(By.xpath(".//*[@id='nav-item-signout']/span")).click();
-		// this.driver.quit();
+		this.driver.findElement(By.xpath(".//*[@id='nav-link-yourAccount']")).click();
+		this.driver.findElement(By.xpath(".//*[@id='nav-item-signout']/span")).click();
+		this.driver.quit();
 		String verificationErrorString = this.verificationErrors.toString();
 		if (!"".equals(verificationErrorString)) {
 			fail(verificationErrorString);
@@ -124,7 +124,7 @@ public class Amazon {
 		return new Object[][] { new Object[] { 5.00 }, new Object[] { 6000.00 } };
 	}
 
-	@Test(enabled = false, dataProvider = "cartNotExceedsCostData")
+	@Test(enabled = true, dataProvider = "cartNotExceedsCostData")
 	public void cartNotExceedsCostTest(Double expectedCost) {
 		double startCost = 0;
 		double finalCost = 0;
@@ -195,6 +195,7 @@ public class Amazon {
 				this.driver.findElement(By.xpath("//a[@id='nav-cart']/span[4]")).getText());
 		if ((itemsInCart < 1)) {
 			System.out.println("There are zero Items in Cart");
+			Assert.fail();
 		} else {
 			if (itemsToDelete < 1) {
 				System.out.println("Nothing to Delete :-)");
@@ -202,6 +203,7 @@ public class Amazon {
 				if (itemsToDelete > itemsInCart) {
 					System.out.println(
 							"There are less items in the Cart than the amount needed to delete");
+					Assert.fail();
 				} else {
 					for (int i = 0; i < itemsToDelete; i++) {
 						this.driver.findElement(By.id("nav-cart")).click();
