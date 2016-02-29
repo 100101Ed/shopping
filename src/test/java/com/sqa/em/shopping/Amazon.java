@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.sqa.em.util.helper.ReadFromFile;
 import com.sqa.em.util.helper.SelectBrowser;
 import com.sqa.em.util.helper.SelectBrowser.BROWSER_TYPE;
 import com.sqa.em.util.helper.TakeAndSaveScreenShot;
@@ -99,12 +100,12 @@ public class Amazon {
 
 	@BeforeClass
 	public void beforeClass() {
-		this.driver = SelectBrowser.getBrowser(BROWSER_TYPE.internetExplorer, this.driver, 30);
-		// Hangs with a database connection TODO: Fix DB later or get from File
-		// or Pom.
-		// String[] userDetails = DataBaseUtil.getData();
-		// setPassword(userDetails[0]);
-		// setEmail(userDetails[1]);
+		String details = ReadFromFile.getRows(2,
+				"src/test/java/com/sqa/em/shopping/properties.amazon.login");
+		String[] userDetails = details.split("\\n");
+		setPassword(userDetails[1]);
+		setEmail(userDetails[0]);
+		this.driver = SelectBrowser.getBrowser(BROWSER_TYPE.fireFox, this.driver, 30);
 		this.driver.get(this.BASE_URL_AMAZON + "/");
 		this.driver.findElement(By.xpath(".//a[@id='nav-link-yourAccount']")).click();
 		// Enter email
