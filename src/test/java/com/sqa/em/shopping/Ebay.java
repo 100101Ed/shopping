@@ -8,6 +8,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -67,9 +69,16 @@ public class Ebay {
 		}
 		// Login
 		driver.findElement(By.cssSelector("#gh-ug>a")).click();
-		Thread.sleep(8000);
-		driver.findElement(By.xpath("//input[contains(@placeholder, 'Email')]")).sendKeys(userName);
-		driver.findElement(By.xpath("//input[contains(@placeholder, 'Password')]")).sendKeys(userPassword);
+		// Thread.sleep(8000);
+
+		Boolean loginIsVisiable = (new WebDriverWait(driver, 20))
+				.until(ExpectedConditions.elementToBeSelected(By.linkText("Email or username")));
+
+		driver.findElement(By.linkText("Email or username")).sendKeys(userName);
+		driver.findElement(By.linkText("Password")).sendKeys(userPassword);
+
+		driver.findElement(By.xpath("//input[contains(@placeholder,'Email')]")).sendKeys(userName);
+		driver.findElement(By.xpath("//input[contains(@placeholder,'Password')]")).sendKeys(userPassword);
 		driver.findElement(By.id("sgnBt")).click();
 		Thread.sleep(1000);
 	}
@@ -166,7 +175,6 @@ public class Ebay {
 				for (WebElement i : linksItemsToRemove) {
 					driver.findElement(By.xpath("/a[contains(@linkText, 'Remove')]")).click();
 				}
-
 			}
 		} catch (NoSuchElementException e) {
 			System.out.println("The billing info is set. then please go ahead and purchase something! :)");
